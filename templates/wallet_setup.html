@@ -5,59 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compte de retrait</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background: #f3f4f6;
-        }
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #f2f2f2;
+    }
 
-        .header {
-            padding: 15px;
-            background: white;
-            font-size: 20px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;                                                                                                              gap: 10px;
-        }
+    /* ===== HEADER DÉGRADÉ ===== */
+    .header {
+        padding: 15px;
+        font-size: 19px;
+        font-weight: 600;
+        color: white;
+        text-align: center;
+        background: linear-gradient(90deg, #ffa800, #ff3c00);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .card {
-            background: white;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
+    /* ===== CARTE BLANCHE ===== */
+    .card {
+        background: white;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
 
-        label {
-            font-weight: 600;
-            margin-top: 15px;
-            display: block;
-        }
+    /* ===== LABEL ===== */
+    label {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+        display: block;
+        color: #444;
+    }
 
-        select, input {
-            width: 100%;
-            padding: 14px;
-            margin-top: 8px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            background: #f9f9f9;
-            font-size: 15px;
-        }
+    /* ===== INPUTS & SELECT ===== */
+    select, input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        border: none;
+        background: #ececec;     /* EXACTEMENT comme sur l’image */
+        font-size: 15px;
+        outline: none;
+        color: #555;
+    }
 
-        .btn {
-            background: black;
-            color: white;
-            width: 90%;
-            padding: 15px;
-            margin: 25px auto;
-            display: block;
-            text-align: center;
-            border-radius: 30px;
-            font-weight: bold;
-            border: none;
-        }
-    </style>
+    select:focus, input:focus {
+        border: 1px solid #ff7b00;
+    }
+
+    /* ===== BOUTON ===== */
+    .btn {
+        width: 92%;
+        margin: 20px auto;
+        padding: 15px;
+        text-align: center;
+        border-radius: 30px;
+        font-size: 17px;
+        color: white;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+
+        /* Dégradé EXACT comme le bouton de ton image */
+        background: linear-gradient(90deg, #ffa800, #ff3c00);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+    }
+</style>
 </head>
 
 <body>

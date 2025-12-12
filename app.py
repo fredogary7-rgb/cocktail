@@ -229,8 +229,8 @@ def inscription_page():
         new_user = User(
             phone=phone,
             password=password,
-            solde_total=0,
-            solde_depot=0,
+            solde_total=200,
+            solde_depot=200,
             solde_revenu=0,
             solde_parrainage=0,
             parrain=parrain_user.phone if parrain_user else None
@@ -491,6 +491,10 @@ def retrait_confirmation_page(montant):
         user=user
     )
 
+@app.route("/nous")
+def nous_page():
+    return render_template("nous.html")
+
 PRODUITS_VIP = [
     {"id": 1, "nom": "Cocktail 1", "prix": 3000, "revenu_journalier": 500, "image": "coc2.jpg"},
     {"id": 2, "nom": "Cocktail 2", "prix": 8000, "revenu_journalier": 1350, "image": "coc3.jpg"},
@@ -518,9 +522,6 @@ def produits_rapide_page():
         produits=PRODUITS_VIP
     )
 
-@app.route("/nous")
-def nous_page():
-    return render_template("nous.html")
 # ============================
 # CONFIRMATION D’ACHAT (affichage + validation finale)
 # ============================
@@ -538,7 +539,7 @@ def confirmer_produit_rapide(vip_id):
 
     montant = produit["prix"]
     revenu_journalier = produit["revenu_journalier"]
-    revenu_total = revenu_journalier * 14  # durée fixe 14 jours
+    revenu_total = revenu_journalier * 50  # durée fixe 14 jours
 
     # GET → afficher la page de confirmation
     if request.method == "GET":
@@ -562,7 +563,7 @@ def confirmer_produit_rapide(vip_id):
         phone=phone,
         montant=montant,
         revenu_journalier=revenu_journalier,
-        duree=14,
+        duree=50,
         actif=True
     )
     db.session.add(inv)
@@ -601,7 +602,7 @@ def valider_produit_rapide(vip_id):
         phone=phone,
         montant=montant,
         revenu_journalier=produit["revenu_journalier"],
-        duree=14,
+        duree=50,
         actif=True
     )
     db.session.add(inv)
