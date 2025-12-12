@@ -119,7 +119,7 @@ class Vlog(db.Model):
 
 def donner_commission(filleul_phone, montant):
     # Niveaux : 30% – 5% – 3%
-    COMMISSIONS = {1: 0.20, 2: 0.03, 3: 0.01}
+    COMMISSIONS = {1: 0.25, 2: 0.03, 3: 0.02}
 
     current_phone = filleul_phone
 
@@ -229,8 +229,8 @@ def inscription_page():
         new_user = User(
             phone=phone,
             password=password,
-            solde_total=200,
-            solde_depot=200,
+            solde_total=500,
+            solde_depot=500,
             solde_revenu=0,
             solde_parrainage=0,
             parrain=parrain_user.phone if parrain_user else None
