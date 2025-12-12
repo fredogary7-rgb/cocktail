@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos de nous - Cocktail</title>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #ffffff;
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        color: #ff2d00;
+    }
+
+    /* HEADER */
+    .header {
+        background: linear-gradient(45deg, #FF8A00, #FF2D00);
+        padding: 15px 0;
+        text-align: center;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+    }
+
+    /* CONTENU TEXTE */
+    .content {
+        padding: 18px;
+        font-size: 15px;
+    }
+
+    /* IMAGES */
+    .image-box {
+        width: 100%;
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .image-box img {
+        width: 92%;
+        max-width: 450px;
+        border-radius: 14px;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="header">À propos de nous</div>
+
+
+<div class="content">
+
+    <p>
+        Cocktail est une plateforme moderne pensée pour offrir une nouvelle expérience
+        d'investissement simple, rapide et sécurisée.
+        Grâce à nos outils intelligents et notre vision innovante, chaque utilisateur peut profiter
+        d’opportunités adaptées à son niveau.
+    </p>
+
+    <!-- IMAGE 1 -->
+    <div class="image-box">
+        <img src="{{ url_for('static', filename='images/nous1.jpg') }}" alt="Cocktail image 1">
+    </div>
+
+    <p>
+        Nos services ne cessent d’évoluer afin de vous offrir la meilleure interface possible.
+        L’objectif est de rendre l’investissement accessible à tous, tout en garantissant un système
+        stable, transparent et performant.
+    </p>
+
+    <!-- IMAGE 2 -->
+    <div class="image-box">
+        <img src="{{ url_for('static', filename='images/nous2.jpg') }}" alt="Cocktail image 2">
+    </div>
+
+    <p>
+        Cocktail continuera d’innover pour accompagner ses membres et proposer de nouvelles
+        solutions technologiques, plus sûres et plus efficaces chaque jour.
+    </p>
+
+    <!-- IMAGE 2 -->                                                                                              <div class="image-box">
+        <img src="{{ url_for('static', filename='images/coc1.jpg') }}" alt="Cocktail image 2">
+    </div>
+    <p>
+
+       Actuellement, des distributeurs automatiques réfrigérés respectueux de l'environnement sont disponibles sur le marché. Ces machines utilisent un système de réfrigération à glace carbonique de pointe et une mousse isolante améliorée,
+ remplaçant ainsi les gaz à effet de serre tels que les hydrofluorocarbures （HFC）. De plus, la machine réfrigérée est équipée du système de contrôle énergétique exclusif de Cocktail,
+ qui ajuste automatiquement le système de réfrigération en fonction du mode de fonctionnement de la machine,
+ permettant ainsi des économies d'énergie lors des périodes de faible utilisation. L'utilisation de cette technologie innovante réduit les émissions de gaz à effet de serre d'au moins 30 %.
+</div>
+
+</body>
+</html>

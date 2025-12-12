@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil</title>
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f6f6f6;
+    margin: 0;
+}
+
+/* ===== BLOC HAUT ===== */
+.user-box {
+    background: linear-gradient(180deg, #ff8a00, #ff3d00);
+    color: white;
+    padding: 25px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-info .phone {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.user-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.balance {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* ===== BOUTONS ===== */
+.actions {
+    padding: 15px;
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    flex: 1;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-recharge,
+.btn-retrait {
+    background: linear-gradient(90deg, #ffb300, #ff3b00);
+}
+
+/* ===== MENU SECTION ===== */
+.menu {
+    margin-top: 20px;
+    background: white;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+}
+
+.menu-title {
+    background: linear-gradient(90deg, #ffb300, #ff3b00);
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.menu-item {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+}
+
+.menu-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu-left img {
+    width: 26px;
+    height: 26px;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.logout {
+    color: red;
+    font-weight: 700;
+}
+
+/* ===== BAS DE PAGE ===== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: white;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+}
+
+.bottom-nav i {
+    font-size: 20px;
+    color: #000;
+}
+
+/* Style responsive */
+@media(max-width: 480px) {
+    .user-img {
+        width:70px;
+        height:70px;
+    }
+}
+
+/* ===== HEADER COCKTAIL ===== */
+
+.cocktail-header {
+    display: flex;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
+}
+
+/* Image cocktail gauche */
+.cocktail-left {
+    width: 45%;
+}
+
+.cocktail-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Côté droit noir premium */
+.cocktail-right {
+    width: 55%;
+    background: #000;
+    color: white;
+    padding: 15px;
+    border-left: 5px solid #ff3b00;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.phone-label {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.phone-number {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 8px 0 15px 0;
+}
+
+/* Bouton déconnexion */
+.logout-btn {
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    background: white;
+    color: #000;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Bande cocktail */
+.cocktail-banner img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Bande Cocktail sous le header -->
+<div class="cocktail-banner">
+    <img src="{{ url_for('static', filename='images/coc1.jpg') }}">
+</div>
+
+
+<!-- BOUTONS -->
+<div class="actions">
+    <a href="/deposit">
+        <button class="btn btn-recharge">Faire un recharge</button>
+    </a>
+
+    <a href="/retrait">
+        <button class="btn btn-retrait">Retirer de l'argent</button>
+    </a>
+</div>
+
+<!-- MENU -->
+<div class="menu">
+
+    <a href="https://t.me/cocktail_communit" target="_blank">
+        <div class="menu-item">
+            <div class="menu-left">
+                <!-- Icône Telegram officiel -->
+                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+                <span>Telegram</span>
+            </div>
+            <span>›</span>
+        </div>
+    </a>
+
+    <a href="/nous">
+        <div class="menu-item">
+            <div class="menu-left">
+                <!-- Icône historique officiel -->
+                <img src="https://cdn-icons-png.flaticon.com/512/1828/1828970.png">
+                <span>À propos de nous</span>
+            </div>
+            <span>›</span>
+        </div>
+    </a>
+
+    <a href="https://whatsapp.com/channel/0029Vb6rE1M8fewh15QUEd3R">
+        <div class="menu-item">
+            <div class="menu-left">
+                <!-- Icône service client PRO -->
+                <img src="https://cdn-icons-png.flaticon.com/512/5974/5974636.png">
+                <span>Whatsapp</span>
+            </div>
+            <span>›</span>
+        </div>
+    </a>
+
+
+<a href="/finance">
+    <div class="menu-item">
+        <div class="menu-left">
+            <img src="https://cdn-icons-png.flaticon.com/512/891/891462.png">
+            <span>Mon compte</span>
+        </div>
+        <span>›</span>
+    </div>
+</a>
+
+    <a href="/logout">
+        <div class="menu-item logout">
+            <div class="menu-left">
+                <!-- Icône logout officiel -->
+                <img src="https://cdn-icons-png.flaticon.com/512/4400/4400828.png">
+                <span>logout</span>
+            </div>
+            <span>›</span>
+        </div>
+    </a>
+
+</div>
+
+    <!-- NAVIGATION DU BAS -->
+    <div class="bottom-nav">
+        <a href="/dashboard"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="/produits_rapide"><i class="fa-solid fa-box"></i>Action</a>
+        <a href="/team"><i class="fa-solid fa-users"></i>Équipe</a>
+        <a href="/profile"><i class="fa-solid fa-user"></i>Moi</a>
+    </div>
+
+</body>
+</html>

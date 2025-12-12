@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CYBER-TRUCK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .dashboard-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: #fff;
+        }
+
+        /* --- IMAGE DU HAUT --- */
+        .dashboard-header img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* --- SOLDE --- */
+        .account-info {
+            display: flex;
+            justify-content: space-around;
+            background-color: #ff2d00;
+            color: #fff;
+            padding: 15px 0;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .account-info div {
+            text-align: center;
+        }
+
+        .account-info small {
+            display: block;
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        .account-info strong {
+            font-size: 17px;
+            color: #fff;
+        }
+
+        /* --- MENU ICONES --- */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 25px 10px 40px 10px;
+            text-align: center;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #ff2d00;
+            cursor: pointer;
+        }
+
+        .icon-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #ff2d00;
+        }
+
+        .icon-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- NAVIGATION BAS --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            z-index: 10;
+        }
+
+        .bottom-nav a {
+            text-decoration: none;
+            color: #ff2d00;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bottom-nav a i {
+            font-size: 20px;
+            margin-bottom: 2px;
+            color: #ff2d00;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 480px) {
+            .dashboard-header img {
+                height: 170px;
+            }
+        }
+
+        /* --- WIDGET STATISTIQUES --- */
+.stats-widget {
+    width: 92%;
+    margin: 20px auto 120px auto;
+    background: #ff2d00;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.stats-title {
+    font-size: 17px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.stat-card {
+    background: #f6f6f6;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #555;
+}
+
+.stat-value {
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* --- STYLE SECTION PROMO AVEC PÈRE NOËL --- */
+.promo-section {
+    width: 92%;
+    margin: 20px auto;
+    background: linear-gradient(135deg, #ff0a0a, #ff4b00);
+    border-radius: 15px;
+    padding: 18px;
+    color: white;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.promo-section h2 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.promo-section p {
+    font-size: 13px;
+    margin: 8px 0 12px 0;
+}
+
+.promo-section button {
+    background: white;
+    color: #ff0000;
+    border: none;
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 10px 18px;
+    cursor: pointer;
+}
+
+.promo-santa {
+    position: absolute;
+    right: -10px;
+    bottom: -5px;
+    width: 160px;
+}
+
+/* ===== POPUP BACKGROUND ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    z-index: 9999;
+    animation: fadeIn .3s ease;
+}
+
+/* ===== POPUP BOX ===== */
+.modal-box {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    animation: slideUp .35s ease;
+}
+
+/* ===== HEADER COCKTAIL ===== */
+.modal-header {
+    background: linear-gradient(45deg, #ff9b00, #ff3200);
+    padding: 18px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+}
+
+/* ===== CONTENT ===== */
+.modal-content {
+    padding: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Telegram button */
+.modal-telegram {
+    background: #f3f3f3;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.modal-telegram img {
+    width: 22px;
+}
+
+/* ===== BUTTON ===== */
+.modal-btn {
+    width: 90%;
+    margin: 15px auto 20px;
+    display: block;
+    padding: 12px 0;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(45deg, #ff9b00, #ff3200);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes slideUp {
+    from {transform: translateY(40px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+    </style>
+</head>
+<!-- ===== POPUP COCKTAIL ===== -->
+<div class="modal-overlay" id="popup" style="display:none;">
+
+    <div class="modal-box">
+
+        <!-- HEADER dégradé cocktail -->
+        <div class="modal-header">
+            NOTIFIER
+        </div>
+
+        <!-- CONTENU -->
+        <div class="modal-content">
+
+            <p>
+                Bienvenue sur <strong>Cocktail</strong>, votre plateforme d'investissement avec des rendements quotidiens.
+                Créez votre équipe et profitez de bonus élevés.
+            </p>
+
+            <p>
+                1. Les nouveaux utilisateurs reçoivent <strong>200 XOF</strong> à l'inscription.<br>
+            <p>
+                2. Retrait minimum : <strong>1000 XOF</strong>.<br>
+            <p>
+                3. Commissions : <strong>20 %</strong>, <strong>3 %</strong>, <strong>2 %</strong> sur trois niveaux.<br>
+            <p>
+                4. Retirez vos gains à tout moment, sans limite de temps.
+            <p>
+                5. Rejoignez notre chaîne officielle pour plus d'informations.
+
+            </p>
+
+            <a href="https://t.me/+SzrlLBpMR_NmYzg0" target="_blank">
+                <div class="modal-telegram">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+                    Rejoignez notre chaîne Telegram officielle
+                </div>
+            </a>
+
+        </div>
+
+        <!-- BOUTON -->
+        <button class="modal-btn" id="closePopup">
+            Je comprends
+        </button>
+
+    </div>
+
+</div>
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- IMAGE DU HAUT -->
+        <div class="dashboard-header">
+            <img src="{{ url_for('static', filename='images/coc1.jpg') }}" alt="Dashboard Honda">
+        </div>
+
+        <!-- BLOCS DE SOLDE -->
+        <div class="account-info">
+            <div>
+                <small>Solde du compte</small>
+                <strong>{{ "{:,.0f}".format(user.solde_total or 0)|replace(",", " ") }} XOF</strong>
+            </div>
+            <div>
+                <small>Revenu cumulé</small>
+                <strong>{{ "{:,.0f}".format(user.solde_revenu or 0)|replace(",", " ") }} XOF</strong>
+            </div>
+        </div>
+
+
+<!-- MENU ICONES -->
+<div class="icon-grid">
+
+    <div class="icon-item" onclick="window.location.href='/deposit'">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Recharger</span>
+    </div>
+
+    <div class="icon-item" onclick="window.location.href='/retrait'">
+        <i class="fa-solid fa-money-bill-transfer"></i>
+        <span>Retrait</span>
+    </div>
+
+    <div class="icon-item" onclick="window.location.href='https://t.me/SER_COCKTAIL'">
+        <i class="fa-solid fa-headset"></i>
+        <span>Service client</span>
+    </div>
+
+
+    <div class="icon-item" onclick="window.location.href='/finance'">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <span>Finance</span>
+    </div>
+
+</div>
+
+</div> <!-- FIN DU BLOC ICONES -->
+
+<!-- SECTION PÈRE NOËL COCA-COLA -->
+<div class="promo-section">
+    <div>
+        <h2>Ravivez votre esprit des fêtes</h2>
+        <p>Rien ne rend les fêtes de fin d'année aussi agréablement festives que Cocktail.</p>
+        <button>Rejoignez-nous</button>
+    </div>
+
+    <img src="{{ url_for('static', filename='images/santa.jpg') }}" class="promo-santa" alt="Père Noël Coca-Cola">
+</div>
+
+<!-- WIDGET STATISTIQUES (correct position) -->
+<div class="stats-widget">
+    <div class="stats-title">Notre Evolution</div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Users</span>
+            <span class="stat-value">{{ total_users }}</span>
+        </div>
+
+
+        <div class="stat-card">
+            <span class="stat-label">Invest</span>
+            <span class="stat-value">{{ "{:,.0f}".format(total_invested)|replace(",", " ") }} XOF</span>
+        </div>
+
+    </div>
+</div>
+
+<!-- NAVIGATION BAS -->
+<div class="bottom-nav">
+    ...
+</div>
+
+    <!-- NAVIGATION DU BAS -->
+    <div class="bottom-nav">
+        <a href="/dashboard"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="/produits_rapide"><i class="fa-solid fa-box"></i>Action</a>
+        <a href="/team"><i class="fa-solid fa-users"></i>Équipe</a>
+        <a href="/profile"><i class="fa-solid fa-user"></i>Moi</a>
+    </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("popup").style.display = "flex";
+});
+
+document.getElementById("closePopup").onclick = function() {
+    document.getElementById("popup").style.display = "none";
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmer achat</title>
+
+<style>
+    body {
+        background: #111;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    /* ===== CARD COCKTAIL STYLE ===== */
+    .confirm-box {
+        margin: 25px 10px;
+        padding: 20px;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #ff8a00, #ff3300);
+        color: white;
+    }
+
+    .confirm-box img {
+        width: 120px;
+        height: 120px;
+        border-radius: 15px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    .confirm-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+
+    .confirm-subtitle {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    .price {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 20px 0;
+    }
+
+    /* ===== YELLOW BLOCKS ===== */
+    .info-block {
+        background: #ffe57f;
+        padding: 12px;
+        border-radius: 10px;
+        margin: 10px 0;
+        font-size: 15px;
+        color: #000;
+        font-weight: 600;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 14px;
+        font-size: 17px;
+        font-weight: 600;
+        border-radius: 12px;
+        border: none;
+    }
+
+    .btn-cancel {
+        background: #eee;
+        color: #333;
+    }
+
+    .btn-confirm {
+        background: #ffdd66;
+        color: #000;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="confirm-box">
+
+    <!-- IMAGE PRODUIT -->
+    <img src="{{ url_for('static', filename='images/' + p.image) }}">
+
+    <!-- TITRE -->
+    <div class="confirm-title">{{ p.nom }}</div>
+
+    <div class="confirm-subtitle">Revenu de règlement toutes les 24 heures</div>
+
+    <!-- PRIX -->
+    <div class="price">
+        XAF {{ "{:,.0f}".format(p.prix).replace(",", " ") }}
+    </div>
+
+    <!-- BLOCS D'INFOS -->
+    <div class="info-block">Revenu quotidien : XAF {{ p.revenu_journalier }}</div>
+    <div class="info-block">Revenu total : XAF {{ revenu_total }}</div>
+    <div class="info-block">Période de validité : {{ p.duree }} jours</div>
+
+    <p style="font-size:13px; margin-top:10px; opacity:0.9;">
+        *Vous pouvez acheter plusieurs appareils pour augmenter vos revenus.
+    </p>
+
+    <!-- BOUTONS -->
+    <div class="btn-row">
+        <a href="/produits_rapide" style="flex:1;">
+            <button class="btn btn-cancel">Annuler</button>
+        </a>
+
+        <form method="POST" action="/produits_rapide/valider/{{ p.id }}" style="flex:1;">
+            <button class="btn btn-confirm" type="submit">Confirmer</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

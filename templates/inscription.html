@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscription</title>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #fff;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    /* ===== HEADER ROUGE + LOGO ===== */
+    .header {
+        width: 100%;
+        background: #d60000;
+        padding: 40px 0 60px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header img {
+        width: 65%;
+        max-width: 260px;
+    }
+
+    /* ===== FORM CONTAINER ===== */
+    .container {
+        width: 90%;
+        max-width: 420px;
+        margin: -40px auto 0 auto; /* remonte le formulaire comme Coca-Cola */
+    }
+
+    /* ===== INPUT WRAPPER ===== */
+    .input-wrapper {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        padding: 14px;
+        font-size: 15px;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        background: none;
+    }
+
+    /* ===== BOUTON ===== */
+    .btn-register {
+        width: 100%;
+        background: #d60000;
+        color: white;
+        padding: 16px;
+        font-size: 17px;
+        border: none;
+        border-radius: 40px;
+        margin-top: 15px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    /* ===== FOOTER LOGIN ===== */
+    .login-text {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #444;
+    }
+
+    .login-text a {
+        color: #d60000;
+        font-weight: bold;
+        text-decoration: none;
+    }
+</style>
+
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+    <img src="{{ url_for('static', filename='images/coc1.jpg') }}">
+</div>
+
+<!-- ===== FORMULAIRE ===== -->
+<div class="container">
+
+<form action="/inscription" method="POST" onsubmit="return verifierFormulaire()">
+
+    <!-- Pays -->
+    <div class="input-wrapper">
+        <select name="country" required>
+            <option value="">Sélectionnez votre pays</option>
+            <option value="Togo">🇹🇬 Togo</option>
+            <option value="Bénin">🇧🇯 Bénin</option>
+            <option value="Côte d'Ivoire">🇨🇮 Côte d’Ivoire</option>
+            <option value="Cameroun">🇨🇲 Cameroun</option>
+            <option value="Gabon">🇬🇦 Gabon</option>
+            <option value="Sénégal">🇸🇳 Sénégal</option>
+            <option value="Niger">🇳🇪 Niger</option>
+            <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+            <option value="Congo Kinshasa">🇨🇩 Congo Kinshasa</option>
+            <option value="Congo Brazzaville">🇨🇬 Congo Brazzaville</option>
+        </select>
+    </div>
+
+    <!-- Téléphone -->
+    <div class="input-wrapper">
+        <input type="tel" name="phone" placeholder="Veuillez entrer le numéro de téléphone" required>
+    </div>
+
+    <!-- Mot de passe -->
+    <div class="input-wrapper">
+        <input type="password" id="password" name="password" placeholder="Mot de passe de connexion" required>
+    </div>
+
+    <!-- Confirmer -->
+    <div class="input-wrapper">
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+    </div>
+
+    <!-- Code d’invitation -->
+    <div class="input-wrapper">
+        <input type="text"
+               name="code_invitation"
+               value="{{ code_ref }}"
+               placeholder="Code d’invitation"
+               {% if code_ref %} readonly style="color:#777" {% endif %}>
+    </div>
+
+    <button class="btn-register">Inscrivez-vous maintenant</button>
+</form>
+
+<p class="login-text">
+    J’ai déjà un compte. <a href="{{ url_for('connexion_page') }}">Cliquez pour vous connecter</a>
+</p>
+
+</div>
+
+<script>
+function verifierFormulaire() {
+    const p1 = document.getElementById("password").value.trim();
+    const p2 = document.getElementById("confirm_password").value.trim();
+
+    if (p1 !== p2) {
+        alert("❌ Les mots de passe ne correspondent pas !");
+        return false;
+    }
+    if (p1.length < 4) {
+        alert("⚠️ Le mot de passe doit contenir au moins 4 caractères.");
+        return false;
+    }
+    return true;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion</title>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #fff;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    /* ===== HEADER ROUGE ===== */
+    .header {
+        width: 100%;
+        background: #d60000;
+        padding: 40px 0 60px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header img {
+        width: 65%;
+        max-width: 260px;
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+        width: 90%;
+        max-width: 420px;
+        margin: -40px auto 0 auto; /* Remonte le formulaire */
+    }
+
+    /* ===== INPUT WRAPPER ===== */
+    .input-wrapper {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        padding: 14px;
+        font-size: 15px;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .input-wrapper select,
+    .input-wrapper input {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        background: none;
+    }
+
+    /* ===== REMEMBER ROW ===== */
+    .remember-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 5px 20px 5px;
+        font-size: 14px;
+        color: #444;
+    }
+
+    .remember-row input {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* ===== SUBMIT BUTTON ===== */
+    .btn-login {
+        width: 100%;
+        background: #d60000;
+        color: white;
+        padding: 16px;
+        font-size: 17px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    /* ===== BOTTOM TEXT ===== */
+    .bottom-text {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #444;
+    }
+
+    .bottom-text a {
+        color: #d60000;
+        font-weight: bold;
+        text-decoration: none;
+    }
+</style>
+
+</head>
+<body>
+
+<!-- ===== HEADER AVEC LOGO ===== -->
+<div class="header">
+    <img src="{{ url_for('static', filename='images/coc1.jpg') }}">
+</div>
+
+<!-- ===== FORMULAIRE ===== -->
+<div class="container">
+
+<form action="/connexion" method="POST">
+
+    <!-- Pays -->
+    <div class="input-wrapper">
+        <select name="country_code" required>
+            <option value="+228">🇹🇬 +228 Togo</option>
+            <option value="+229">🇧🇯 +229 Bénin</option>
+            <option value="+225">🇨🇮 +225 Côte d’Ivoire</option>
+            <option value="+237">🇨🇲 +237 Cameroun</option>
+            <option value="+223">🇲🇱 +223 Mali</option>
+            <option value="+241">🇬🇦 +241 Gabon</option>
+            <option value="+221">🇸🇳 +221 Sénégal</option>
+            <option value="+227">🇳🇪 +227 Niger</option>
+            <option value="+226">🇧🇫 +226 Burkina Faso</option>
+            <option value="+243">🇨🇩 +243 Congo Kinshasa</option>
+            <option value="+242">🇨🇬 +242 Congo Brazzaville</option>
+        </select>
+    </div>
+
+    <!-- Numéro -->
+    <div class="input-wrapper">
+        <input type="tel" name="phone" placeholder="Votre numéro" required>
+    </div>
+
+    <!-- Mot de passe -->
+    <div class="input-wrapper">
+        <input type="password" name="password" placeholder="Mot de passe" required>
+    </div>
+
+    <!-- Remember -->
+    <div class="remember-row">
+        <input type="checkbox" id="remember" name="remember">
+        <label for="remember">Mémoriser votre mot de passe</label>
+    </div>
+
+    <button class="btn-login">Connexion</button>
+</form>
+
+<p class="bottom-text">
+    Vous n'avez pas de compte ?
+    <a href="{{ url_for('inscription_page') }}">Créer un compte >></a>
+</p>
+
+</div>
+
+</body>
+</html>

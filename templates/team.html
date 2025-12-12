@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Parrainage - Mon équipe</title>
+<style>
+/* ===== HEADER ===== */
+
+.header-invite{
+    display:flex;
+    width:100%;
+    border-radius:0 0 20px 20px;
+    overflow:hidden;
+    background:#000;
+}
+
+.header-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.header-img{
+    width:50%;
+}
+
+.header-right{
+    width:50%;
+    padding:20px;
+    background:#3cc4ff;
+    color:#000;
+}
+
+.header-small{
+    font-size:12px;
+    opacity:0.8;
+}
+
+.header-title{
+    font-size:22px;
+    font-weight:800;
+    margin:10px 0 15px 0;
+}
+
+.invite-box{
+    background:#fff;
+    padding:10px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:5px;
+}
+
+.invite-value{
+    font-size:15px;
+    font-weight:500;
+}
+
+.invite-btn{
+    padding:5px 15px;
+    border:none;
+    border-radius:10px;
+    color:#000;
+    font-weight:700;
+    background:linear-gradient(90deg, #ffb200, #ff3b00);
+}
+
+.invite-label{
+    font-size:12px;
+    opacity:0.8;
+    margin-bottom:10px;
+}
+
+/* ===== TOP TWO ORANGE CARDS ===== */
+
+.top-stats{
+    display:flex;
+    gap:10px;
+    padding:10px;
+}
+
+.top-box{
+    flex:1;
+    background:linear-gradient(90deg, #ffbd00, #ff3b00);
+    padding:20px 10px;
+    border-radius:12px;
+    color:#000;
+    text-align:center;
+}
+
+.top-value{
+    font-size:22px;
+    font-weight:700;
+}
+
+.top-arrow{
+    font-size:16px;
+    margin:2px 0;
+}
+
+.top-label{
+    font-size:13px;
+}
+
+
+/* ===== LEVEL CARDS ===== */
+
+.level-card{
+    background:#fff;
+    padding:15px;
+    margin:10px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.level-icon{
+    width:60px;
+}
+
+.level-col{
+    display:inline-block;
+    width:25%;
+    text-align:center;
+}
+
+.level-percent{
+    font-size:20px;
+    font-weight:700;
+}
+
+.level-number{
+    font-size:20px;
+    font-weight:700;
+}
+
+.level-profit{
+    font-size:18px;
+    font-weight:700;
+}
+
+.level-label-small{
+    font-size:12px;
+    opacity:0.7;
+}
+
+/* LEVEL TAG BUTTON */
+.level-tag{
+    width:max-content;
+    padding:5px 15px;
+    color:#fff;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:700;
+    margin-top:5px;
+}
+
+.level1{ background:linear-gradient(90deg,#ffbd00,#ff3b00); }
+.level2{ background:linear-gradient(90deg,#ffbd00,#ff3b00); }
+.level3{ background:linear-gradient(90deg,#ffbd00,#ff3b00); }
+
+/* BAR UNDER LEVEL */
+.level-bar{
+    height:6px;
+    border-radius:5px;
+    margin-top:10px;
+    background:linear-gradient(90deg,#ffbd00,#ff3b00);
+}
+
+/* ===== BONUS CARD ===== */
+
+.bonus-card {
+    background:#fff;
+    padding:15px 18px;
+    border-radius:12px;
+    margin:10px;
+    margin-top:20px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+    line-height:20px;
+    font-size:14px;
+    color:#444;
+}
+
+.bonus-title {
+    font-size:17px;
+    font-weight:700;
+    margin-bottom:10px;
+    position:relative;
+    padding-left:10px;
+}
+
+/* Barre verticale à gauche du titre */
+.bonus-title::before {
+    content:"";
+    position:absolute;
+    left:0;
+    top:4px;
+    width:3px;
+    height:18px;
+    background:#000;
+    border-radius:3px;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER STYLE COCA (Cocktail version) ===== -->
+<div class="header-invite">
+
+    <div class="header-img">
+        <img src="{{ url_for('static', filename='images/coc1.jpg') }}">
+    </div>
+
+    <div class="header-right">
+        <div class="header-small">Gérez votre équipe, obtenez des rendements plus élevés</div>
+        <div class="header-title">INVITER DES AMIS</div>
+
+        <!-- Code -->
+        <div class="invite-box">
+            <div class="invite-value" id="codeBox">{{ referral_code }}</div>
+            <button class="invite-btn" onclick="copyText('#codeBox')">Copie</button>
+        </div>
+        <div class="invite-label">Code d'invitation</div>
+
+        <!-- Lien -->
+        <div class="invite-box">
+            <div class="invite-value" id="linkBox">{{ referral_link }}</div>
+            <button class="invite-btn" onclick="copyText('#linkBox')">Copie</button>
+        </div>
+        <div class="invite-label">Lien d'invitation</div>
+    </div>
+
+</div>
+
+<!-- ===== 2 BLOCS ORANGE ===== -->
+<div class="top-stats">
+
+    <div class="top-box">
+        <div class="top-value">{{ stats.team_size }}</div>
+        <div class="top-arrow">>></div>
+        <div class="top-label">Taille de l'équipe</div>
+    </div>
+
+    <div class="top-box">
+        <div class="top-value">{{ "{:,.0f}".format(stats.commissions_total)|replace(",", " ") }} XAF</div>
+        <div class="top-arrow">>></div>
+        <div class="top-label">Revenu total de l'équipe</div>
+    </div>
+
+</div>
+
+<!-- ===== LEVEL 1 ===== -->
+<div class="level-card">
+
+    <img src="{{ url_for('static', filename='images/level1.png') }}" class="level-icon">
+
+    <div class="level-col">
+        <div class="level-percent">20%</div>
+        <div class="level-label-small">Taux de commission</div>
+    </div>
+
+    <div class="level-col">
+        <div class="level-number">{{ stats.level1 }}</div>
+        <div class="level-label-small">Nombres d'utilisateurs</div>
+    </div>
+
+    <div class="level-tag level1">Level 1</div>
+
+    <div class="level-bar level1"></div>
+</div>
+
+<!-- ===== LEVEL 2 ===== -->
+<div class="level-card">
+
+    <img src="{{ url_for('static', filename='images/level2.png') }}" class="level-icon">
+
+    <div class="level-col">
+        <div class="level-percent">3%</div>
+        <div class="level-label-small">Taux de commission</div>
+    </div>
+
+    <div class="level-col">
+        <div class="level-number">{{ stats.level2 }}</div>
+        <div class="level-label-small">Nombres d'utilisateurs</div>
+    </div>
+
+    <div class="level-tag level2">Level 2</div>
+
+    <div class="level-bar level2"></div>
+</div>
+
+<!-- ===== LEVEL 3 ===== -->
+<div class="level-card">
+
+    <img src="{{ url_for('static', filename='images/level3.png') }}" class="level-icon">
+
+    <div class="level-col">
+        <div class="level-percent">2%</div>
+        <div class="level-label-small">Taux de commission</div>
+    </div>
+
+    <div class="level-col">
+        <div class="level-number">{{ stats.level3 }}</div>
+        <div class="level-label-small">Nombres d'utilisateurs</div>
+    </div>
+
+    <div class="level-tag level3">Level 3</div>
+
+    <div class="level-bar level3"></div>
+</div>
+
+<!-- ===== BONUS INVITATION ===== -->
+<div class="bonus-card">
+    <div class="bonus-title">Bonus d'invitation</div>
+
+    <p>
+        Lorsque vos amis invités s'inscrivent et investissent.
+        Lorsque les membres de votre équipe de niveau 1 investissent, vous recevez une récompense en espèces de 25 %.
+        Lorsque les membres de votre équipe de niveau 2 investissent, vous recevez une récompense en espèces de 4 %.
+        Lorsque les membres de votre équipe de niveau 3 investissent, vous recevez une récompense en espèces de 1 %.
+    </p>
+
+    <p>
+        Les membres de votre équipe peuvent obtenir des récompenses en espèces lors de leur premier investissement.
+    </p>
+</div>
+
+<script>
+function copyText(selector){
+    const el = document.querySelector(selector);
+    navigator.clipboard.writeText(el.textContent.trim());
+    alert("Copié ✔️");
+}
+</script>
+</body>
+</html>
