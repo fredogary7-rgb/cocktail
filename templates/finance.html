@@ -172,23 +172,58 @@
     {% endif %}
 </div>
 
-<!-- HISTORIQUE DES RETRAITS -->
+<!-- HISTORIQUE DEPOTS & RETRAITS -->
 <div class="card">
     <div class="title">Historique</div>
+
+    <!-- DEPOTS -->
+    <div class="line"><b>Dépôts</b></div>
+
+    {% if depots %}
+        {% for d in depots %}
+            <div class="item">
+                + {{ "{:,.0f}".format(d.montant)|replace(",", " ") }} FCFA
+                <br>
+                <small>
+                    {{ d.date.strftime("%d/%m/%Y") }} —
+                    <span style="color:
+                        {% if d.statut == 'accepté' %}green
+                        {% elif d.statut == 'en attente' %}orange
+                        {% else %}red{% endif %}">
+                        {{ d.statut }}
+                    </span>
+                </small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <small>Aucun dépôt effectué.</small>
+    {% endif %}
+
+    <hr style="border:0.5px solid #eee; margin:12px 0;">
+
+    <!-- RETRAITS -->
+    <div class="line"><b>Retraits</b></div>
 
     {% if retraits %}
         {% for r in retraits %}
             <div class="item">
                 - {{ "{:,.0f}".format(r.montant)|replace(",", " ") }} FCFA
                 <br>
-                <small>{{ r.date.strftime("%d/%m/%Y") }} — {{ r.statut }}</small>
+                <small>
+                    {{ r.date.strftime("%d/%m/%Y") }} —
+                    <span style="color:
+                        {% if r.statut == 'payé' %}green
+                        {% elif r.statut == 'en attente' %}orange
+                        {% else %}red{% endif %}">
+                        {{ r.statut }}
+                    </span>
+                </small>
             </div>
         {% endfor %}
     {% else %}
         <small>Aucun retrait effectué.</small>
     {% endif %}
 </div>
-
     <!-- NAVIGATION DU BAS -->
     <div class="bottom-nav">
         <a href="/dashboard"><i class="fa-solid fa-house"></i>Maison</a>

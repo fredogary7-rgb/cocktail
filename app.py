@@ -625,8 +625,15 @@ def finance_page():
     revenus_totaux = (user.solde_revenu or 0) + (user.solde_parrainage or 0)
     fortune_totale = (user.solde_depot or 0) + revenus_totaux
 
-    retraits = Retrait.query.filter_by(phone=phone).order_by(Retrait.date.desc()).limit(10).all()
+    # 🔹 RETRAITS
+    retraits = Retrait.query.filter_by(phone=phone)\
+        .order_by(Retrait.date.desc()).limit(10).all()
 
+    # 🔹 DEPOTS (NOUVEAU)
+    depots = Depot.query.filter_by(phone=phone)\
+        .order_by(Depot.date.desc()).limit(10).all()
+
+    # 🔹 INVESTISSEMENTS ACTIFS
     actifs_raw = Investissement.query.filter_by(phone=phone, actif=True).all()
 
     actifs = []
@@ -646,6 +653,7 @@ def finance_page():
         revenus_totaux=revenus_totaux,
         fortune_totale=fortune_totale,
         retraits=retraits,
+        depots=depots,     # 🔥 envoyé au template
         actifs=actifs
     )
 
