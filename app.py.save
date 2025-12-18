@@ -146,7 +146,6 @@ def donner_commission(filleul_phone, montant):
 
         parrain.solde_parrainage += gain
         parrain.commission_total += gain
-        user.solde_revenu += gain
 
         db.session.commit()
 
