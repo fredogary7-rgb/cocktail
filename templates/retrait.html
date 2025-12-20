@@ -57,76 +57,94 @@ input {
     margin-top: 12px;
 }
 
-/* ===== CONSEILS DE RETRAIT ===== */
-
-.retreat-card {
-    background:#fff;
-    padding:18px 20px;
-    border-radius:12px;
-    margin:15px;
-    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+/* ===== BOUTON LUCKY SPIN FLOTTANT ===== */
+.lucky-spin-btn {
+    position: fixed;
+    right: 15px;
+    bottom: 120px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff9b00, #ff2d00);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    z-index: 999;
+    text-decoration: none;
+    animation: pulseSpin 1.8s infinite;
+}
+.lucky-spin-btn i {
+    color: white;
+    font-size: 26px;
+}
+@keyframes pulseSpin {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 45, 0, 0.6); }
+    70% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(255, 45, 0, 0); }
+    100% { transform: scale(1); }
 }
 
-.retreat-title {
-    font-size:17px;
-    font-weight:700;
-    margin-bottom:12px;
-    color:#222;
+/* ===== MESSAGE D'ERREUR ===== */
+.error-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 0, 0, 0.9);
+    color: white;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    animation: fadeOut 5s forwards;
 }
-
-.retreat-list {
-    margin:0;
-    padding-left:18px;
-    color:#ff2d00;
-    font-size:14px;
-    line-height:22px;
-}
-
-.retreat-list li {
-    margin-bottom:12px;
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; display: none; }
 }
 </style>
 
 </head>
 <body>
 
-<div class="account-info" style="background:#ff2d00; color:#fff; padding:20px 0;
-     display:flex; justify-content:space-around; border-radius:0 0 20px 20px;">
-
+<div class="account-info" style="background:#ff2d00; color:#fff; padding:20px 0; display:flex; justify-content:space-around; border-radius:0 0 20px 20px;">
     <div style="text-align:center;">
         <small style="color:#ccc; font-size:14px;">Solde du compte</small>
         <div style="font-size:22px; font-weight:bold;">
             {{ "{:,.0f}".format(solde_total).replace(",", " ") }} XOF
         </div>
     </div>
-
     <div style="text-align:center;">
         <small style="color:#ccc; font-size:14px;">Solde retirable</small>
         <div style="font-size:22px; font-weight:bold;">
             {{ "{:,.0f}".format(solde_retraitable).replace(",", " ") }} XOF
         </div>
     </div>
-
 </div>
 
-<form method="POST">
+<!-- ===== BOUTON LUCKY SPIN FLOTTANT ===== -->
+<a href="/lucky-spin" class="lucky-spin-btn">
+    <i class="fa-solid fa-gift"></i>
+</a>
 
+<!-- ===== AFFICHAGE DES ERREURS ===== -->
+{% if message_erreur %}
+<div class="error-message" id="errorMessage">
+    {{ message_erreur }}
+</div>
+{% endif %}
+
+<form method="POST">
     <div class="card">
         <h3>Montant du retrait</h3>
-
-        <input
-            type="number"
-            name="montant"
-            id="montant"
-            placeholder="Entrez le montant"
-            required>
-
+        <input type="number" name="montant" id="montant" placeholder="Entrez le montant" required>
         <p id="netText" style="color:red;font-weight:bold;">
             Réception réelle : FCFA 0 — impôt : 15%
         </p>
 
         <h3>Compte de retrait</h3>
-
         <div class="portefeuille" onclick="window.location.href='/ajouter_portefeuille'">
             {{ user.wallet_country }} • {{ user.wallet_operator }}<br>
             <strong>{{ user.wallet_number }}</strong>
@@ -134,43 +152,40 @@ input {
     </div>
 
     <button class="btn" type="submit">Retirer maintenant</button>
-
 </form>
 
 <!-- ===== CONSEILS DE RETRAIT ===== -->
 <div class="retreat-card">
     <div class="retreat-title">Conseils de retrait</div>
-
     <ol class="retreat-list">
         <li>Le montant minimum de retrait est de 1000 FCFA.</li>
-
-        <li>Il n'y a pas de limite de temps pour les retraits, mais trois retraits maximum sont autorisés par jour.</li>
-
-        <li>18 % des frais de retrait serviront à couvrir les pertes liées au produit.</li>
-
-        <li>Les retraits sont généralement disponibles sous 2 heures, mais ce délai peut atteindre 24 heures dans des circonstances exceptionnelles.</li>
-
-        <li>Veuillez renseigner correctement les informations de votre compte de retrait. Toute information incorrecte entraînera l'échec du retrait.</li>
-
-        <li>Afin de protéger les droits et les intérêts de la plateforme et de ses membres, vous devez investir avant de pouvoir retirer des fonds.</li>
+        <li>Trois retraits maximum par jour.</li>
+        <li>18 % des frais de retrait servent à couvrir les pertes liées au produit.</li>
+        <li>Les retraits sont généralement disponibles sous 2 heures, mais peuvent prendre jusqu'à 24 heures.</li>
+        <li>Renseignez correctement vos informations de compte de retrait.</li>
+        <li>Vous devez investir avant de pouvoir retirer des fonds.</li>
     </ol>
 </div>
+
 <!-- 🔥 CALCUL AUTOMATIQUE DU MONTANT NET -->
 <script>
 document.getElementById("montant").addEventListener("input", function() {
     let montant = parseFloat(this.value);
     if (isNaN(montant) || montant <= 0) {
-        document.getElementById("netText").innerHTML =
-            "Réception réelle : FCFA 0 — impôt : 15%";
+        document.getElementById("netText").innerHTML = "Réception réelle : FCFA 0 — impôt : 15%";
         return;
     }
-
     let taxe = montant * 0.15;
     let net = montant - taxe;
+    document.getElementById("netText").innerHTML = "Réception réelle : <b>FCFA " + net.toLocaleString('fr-FR') + "</b> — impôt : 15%";
+});
 
-    document.getElementById("netText").innerHTML =
-        "Réception réelle : <b>FCFA " + net.toLocaleString('fr-FR') +
-        "</b> — impôt : 15%";
+// Supprime automatiquement le message d'erreur après 5 secondes
+window.addEventListener("load", function() {
+    let errorDiv = document.getElementById("errorMessage");
+    if(errorDiv){
+        setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+    }
 });
 </script>
 

@@ -1,3 +1,4 @@
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -9,6 +10,9 @@ import uuid
 from datetime import datetime, timedelta
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "ma_cle_ultra_secrete"
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 UPLOAD_FOLDER = "static/vlogs"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -41,28 +45,39 @@ def add_reference_column():
         """))
         conn.commit()
     print("✅ Colonne 'reference' ajoutée si elle n'existait pas.")
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uid = db.Column(db.String(50), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
 
+import uuid
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Identifiants
+    uid = db.Column(db.String(50), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     phone = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
-    parrain = db.Column(db.String(30), nullable=True)   # 🔥 colonne correcte
+    # Parrainage
+    parrain = db.Column(db.String(30), nullable=True)
     commission_total = db.Column(db.Float, default=0.0)
 
+    # Portefeuille
     wallet_country = db.Column(db.String(50))
     wallet_operator = db.Column(db.String(50))
     wallet_number = db.Column(db.String(30))
 
+    # Soldes
     solde_total = db.Column(db.Float, default=0.0)
     solde_depot = db.Column(db.Float, default=0.0)
     solde_parrainage = db.Column(db.Float, default=0.0)
     solde_revenu = db.Column(db.Float, default=0.0)
+
     premier_depot = db.Column(db.Boolean, default=False)
 
-    date_creation = db.Column(db.DateTime, default=datetime.utcnow)
+    # Lucky Spin
+    spin_chances = db.Column(db.Integer, default=1)
+    last_spin_gain = db.Column(db.Float, default=0.0)  # 🔥 Nouveau champ pour le dernier gain
 
+    date_creation = db.Column(db.DateTime, default=datetime.utcnow)
 class Depot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     phone = db.Column(db.String(30))
@@ -246,10 +261,11 @@ def inscription_page():
     # 🔥 Passe le code au HTML
     return render_template("inscription.html", code_ref=code_ref)
 
+from flask_login import login_user, current_user
+
 @app.route("/connexion", methods=["GET", "POST"])
 def connexion_page():
     if request.method == "POST":
-
         phone = request.form.get("phone", "").strip()
         password = request.form.get("password", "").strip()
 
@@ -259,27 +275,30 @@ def connexion_page():
 
         user = User.query.filter_by(phone=phone).first()
 
-        if not user:
-            flash("❌ Numéro introuvable.", "danger")
+        if not user or user.password != password:
+            flash("❌ Numéro ou mot de passe incorrect.", "danger")
             return redirect(url_for("connexion_page"))
 
-        if user.password != password:
-            flash("❌ Mot de passe incorrect.", "danger")
-            return redirect(url_for("connexion_page"))
+        # ✅ Connexion Flask-Login
+        login_user(user)
 
+        # ✅ Mettre en session ton phone pour tes autres sections
         session["phone"] = user.phone
 
         flash("Connexion réussie ✅", "success")
+
+        # ✅ Redirection vers dashboard
         return redirect(url_for("dashboard_page"))
 
     return render_template("connexion.html")
 
+from flask_login import logout_user
+
 @app.route("/logout")
 def logout_page():
-    session.clear()
+    logout_user()   # ✅ OBLIGATOIRE
     flash("Déconnexion effectuée.", "info")
     return redirect(url_for("connexion_page"))
-
 
 
 def get_global_stats():
@@ -301,17 +320,17 @@ def dashboard_page():
         flash("Session invalide, veuillez vous reconnecter.", "danger")
         return redirect(url_for("connexion_page"))
 
+    # ⚡ Important : récupérer les stats globales
     total_users, total_deposits, total_invested, total_withdrawn = get_global_stats()
 
-    # 🔥 Revenu cumulé = commissions + revenus investissements
     revenu_cumule = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
     return render_template(
         "dashboard.html",
         user=user,
-        revenu_cumule=revenu_cumule,  # 🔥 envoi au HTML
+        revenu_cumule=revenu_cumule,
         total_users=total_users,
-        total_invested=total_invested,
+        total_invested=total_invested,  # ← ici, c’est crucial
     )
 
 @app.route("/deposit", methods=["GET", "POST"])
@@ -387,110 +406,150 @@ def wallet_setup_page():
 
     return render_template("wallet_setup.html")
 
+from flask import request, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+
 @app.route("/retrait", methods=["GET", "POST"])
 @login_required
 def retrait_page():
-    phone = get_logged_in_user_phone()
-    user = User.query.filter_by(phone=phone).first()
+    user = current_user  # Flask-Login
 
-    if not user:
-        flash("Session invalide.", "danger")
-        return redirect(url_for("connexion_page"))
-
-    # Le user doit avoir configuré son portefeuille
     if not user.wallet_number:
+        flash("Veuillez configurer votre portefeuille avant de retirer.", "warning")
         return redirect(url_for("wallet_setup_page"))
 
-    # ✅ Solde retirable = Parrainage + Revenus
+    # Solde retirable = Parrainage + Revenus
     solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
+    message_erreur = None
+
     if request.method == "POST":
-        try:
-            montant = float(request.form["montant"])
-        except:
-            flash("Montant invalide.", "danger")
-            return redirect(url_for("retrait_page"))
+        # 1️⃣ Vérifie si l'utilisateur a joué au Lucky Spin
+        if user.spin_chances != 0:
+            message_erreur = "❌ Vous devez tenter votre chance au Lucky Spin avant d'effectuer un retrait."
+        else:
+            # 2️⃣ Vérifie si dépôt obligatoire après gain Lucky Spin
+            last_gain = getattr(user, "last_spin_gain", 0) or 0
+            depot_min = last_gain / 2
+            solde_depot = user.solde_depot or 0
 
-        if montant < 1000:
-            flash("Montant minimum : 1000 XOF.", "warning")
-            return redirect(url_for("retrait_page"))
+            if last_gain > 0 and solde_depot < depot_min:
+                message_erreur = f"❌ Vous devez effectuer un dépôt de {depot_min:,.0f} XOF avant de pouvoir retirer."
+            
+            # 3️⃣ Vérifie le montant saisi
+            if not message_erreur:
+                try:
+                    montant = float(request.form.get("montant", 0))
+                except (ValueError, TypeError):
+                    message_erreur = "Montant invalide."
 
-        if montant > solde_retraitable:
-            flash("Solde insuffisant.", "danger")
-            return redirect(url_for("retrait_page"))
-
-        return redirect(url_for("retrait_confirmation_page", montant=montant))
+                if not message_erreur:
+                    if montant < 1000:
+                        message_erreur = "Montant minimum : 1000 XOF."
+                    elif montant > solde_retraitable:
+                        message_erreur = "Solde insuffisant."
+                    else:
+                        # Tout est OK → redirection vers confirmation
+                        return redirect(url_for("retrait_confirmation_page", montant=montant))
 
     return render_template(
         "retrait.html",
         user=user,
         solde_total=user.solde_total,
-        solde_retraitable=solde_retraitable
+        solde_retraitable=solde_retraitable,
+        message_erreur=message_erreur
     )
 
 @app.route("/retrait/confirmation/<int:montant>", methods=["GET", "POST"])
 @login_required
 def retrait_confirmation_page(montant):
-    phone = get_logged_in_user_phone()
-    user = User.query.filter_by(phone=phone).first()
+    user = current_user
 
-    if not user:
-        flash("Session expirée.", "danger")
-        return redirect(url_for("connexion_page"))
+    if not user.wallet_number:
+        flash("Veuillez configurer votre portefeuille avant de retirer.", "warning")
+        return redirect(url_for("wallet_setup_page"))
 
-    # Vérification des fonds
-    solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
-    if montant > solde_retraitable:
-        flash("Solde insuffisant.", "danger")
-        return redirect(url_for("retrait_page"))
-
-    # Calcul taxe et montant net
     taxe = int(montant * 0.15)
     net = montant - taxe
 
-    # Si l'utilisateur clique sur "Confirmer"
+    # Message obligatoire pour tout retrait : dépôt de 3000 XOF
+    depot_message = "❌ Vous devez recharger votre compte de 3 000 XOF pour finaliser le retrait."
+
+    # Le POST ne crée jamais de retrait tant que le dépôt n'est pas effectué
     if request.method == "POST":
-
-        retrait = Retrait(
-            phone=phone,
-            montant=montant,
-            statut="en_attente"
-        )
-        db.session.add(retrait)
-
-        # Déduction du solde
-        reste = montant
-
-        if user.solde_parrainage >= reste:
-            user.solde_parrainage -= reste
-            reste = 0
-        else:
-            reste -= user.solde_parrainage
-            user.solde_parrainage = 0
-
-        if reste > 0:
-            user.solde_revenu -= reste
-
-
-        db.session.commit()
-
-        # 👉 On renvoie une page spéciale avec chargement + succès + redirection
         return render_template(
-            "retrait_confirmation_loading.html",
+            "retrait_confirmation.html",
             montant=montant,
             taxe=taxe,
             net=net,
-            user=user
+            user=user,
+            depot_message=depot_message
         )
 
-    # GET → afficher la page de confirmation normale
     return render_template(
         "retrait_confirmation.html",
         montant=montant,
         taxe=taxe,
         net=net,
-        user=user
+        user=user,
+        depot_message=depot_message
     )
+
+import random
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+# --------------------------
+# Fonction de tirage pondéré
+# --------------------------
+def weighted_choice():
+    gains = [
+        (3000, 10),
+        (5400, 7),
+        (7200, 6),
+        (12000, 5),
+        (22800, 4),
+        (52800, 1.5),
+        (112800, 1),
+        (532800, 0.1)
+    ]
+
+    pool = []
+    for gain, weight in gains:
+        pool.extend([gain] * int(weight * 10))                                                                
+    return random.choice(pool)
+
+# --------------------------
+# Route Lucky Spin
+# --------------------------
+@app.route("/lucky-spin", methods=["GET", "POST"])
+@login_required
+def lucky_spin():
+
+    if current_user.spin_chances is None:
+        current_user.spin_chances = 1
+
+    if current_user.solde_total is None:
+        current_user.solde_total = 0
+
+    if current_user.spin_chances <= 0:
+        db.session.commit()
+        flash("❌ Vous avez déjà participé au Lucky Spin", "danger")
+        return render_template("lucky_spin.html", blocked=True)
+
+    if request.method == "POST":
+        gain = weighted_choice()
+        current_user.solde_revenu += gain
+
+        current_user.spin_chances = 0
+        db.session.commit()
+
+        flash(f"🎉 Félicitations ! Vous avez gagné {gain} XOF", "success")
+        return render_template("lucky_spin.html", result=gain, blocked=True)
+
+    db.session.commit()
+    return render_template("lucky_spin.html", blocked=False)
 
 @app.route("/nous")
 def nous_page():
@@ -900,6 +959,7 @@ def paiement_quotidien():
                         inv.actif = False
 
                     db.session.commit()
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

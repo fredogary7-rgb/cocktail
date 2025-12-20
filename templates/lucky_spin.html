@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Spin</title>
+
+<style>
+body{
+    background:#0f0f0f;
+    font-family:Poppins, Arial, sans-serif;
+    color:white;
+    text-align:center;
+    margin:0;
+    padding:0;
+}
+
+/* ===== HEADER ===== */
+.header{
+    padding:15px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+/* ===== WHEEL ===== */
+.wheel-container{
+    position:relative;
+    width:320px;
+    height:320px;
+    margin:20px auto;
+}
+
+.wheel{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    border:10px solid #c9a33a;
+    background:conic-gradient(
+        #f9e09b 0deg 45deg,
+        #e3b94d 45deg 90deg,
+        #f9e09b 90deg 135deg,
+        #e3b94d 135deg 180deg,
+        #f9e09b 180deg 225deg,
+        #e3b94d 225deg 270deg,
+        #f9e09b 270deg 315deg,
+        #e3b94d 315deg 360deg
+    );
+    transition:transform 4s cubic-bezier(.17,.67,.25,1);
+}
+
+/* ===== POINTER ===== */
+.pointer{
+    width:0;
+    height:0;
+    border-left:14px solid transparent;
+    border-right:14px solid transparent;
+    border-bottom:30px solid #ffcc00;
+    position:absolute;
+    top:-12px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:10;
+}
+
+/* ===== CENTER BUTTON ===== */
+.center-btn{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, #ffd700, #b8860b);
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:16px;
+    color:#000;
+    z-index:5;
+}
+
+/* ===== SPIN BUTTON ===== */
+.spin-btn{
+    margin-top:20px;
+    padding:14px 35px;
+    background:linear-gradient(45deg,#ffcc00,#ff9900);
+    border:none;
+    font-size:18px;
+    font-weight:bold;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+/* ===== INFO BOX ===== */
+.info-box{
+    margin:20px;
+    background:#1a1a1a;
+    padding:14px;
+    border-radius:14px;
+    font-size:14px;
+}
+
+/* ===== TABLE ===== */
+.table{
+    margin:20px;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:12px;
+    background:#2a1a00;
+    border-bottom:1px solid #444;
+}
+
+.row.red{
+    background:#8b0000;
+}
+
+.row span{
+    font-size:13px;
+}
+
+/* ===== RESULT ===== */
+.result{
+    margin-top:15px;
+    font-size:18px;
+    color:#ffd700;
+}
+
+/* ===== BLOCKED ===== */
+.blocked{
+    color:#ff4444;
+    font-weight:bold;
+    margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🎡 LUCKY SPIN</div>
+
+<div class="wheel-container">
+    <div class="pointer"></div>
+    <div id="wheel" class="wheel"></div>
+    <div class="center-btn">START</div>
+</div>
+
+<div class="info-box">
+    Chances restantes de tirage :
+    <strong>{{ current_user.spin_chances }}</strong>
+</div>
+
+{% if not blocked %}
+<form method="POST" onsubmit="spinWheel()">
+    <button class="spin-btn">LANCER</button>
+</form>
+{% else %}
+<div class="blocked">⛔ Vous avez déjà utilisé votre Lucky Spin</div>
+{% endif %}
+
+{% if result %}
+<div class="result">🎉 Gain : {{ result }} XOF</div>
+{% endif %}
+
+<!-- ===== CONDITIONS ===== -->
+<div class="table">
+    <div class="row">
+        <span>Dépôt 3000 – 8000 XOF</span>
+        <span>1 fois</span>
+    </div>
+    <div class="row">
+        <span>Dépôt 10000 – 20000 XOF</span>
+        <span>2 fois</span>
+    </div>
+    <div class="row">
+        <span>Dépôt 21000 – 35000 XOF</span>
+        <span>3 fois</span>
+    </div>
+    <div class="row red">
+        <span>Dépôt 40000 – 60000 XOF</span>
+        <span>5 fois</span>
+    </div>
+</div>
+
+<script>
+function spinWheel(){
+    const wheel = document.getElementById("wheel");
+    const rotation = 360 * 7 + Math.floor(Math.random() * 360);
+    wheel.style.transform = `rotate(${rotation}deg)`;
+}
+</script>
+
+</body>
+</html>
