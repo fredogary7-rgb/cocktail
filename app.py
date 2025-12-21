@@ -48,24 +48,39 @@ def add_reference_column():
 
 import uuid
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
 
+    # =====================
     # Identifiants
-    uid = db.Column(db.String(50), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    # =====================
+    uid = db.Column(
+        db.String(50),
+        unique=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
+    )
+
     phone = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
+    # =====================
     # Parrainage
+    # =====================
     parrain = db.Column(db.String(30), nullable=True)
     commission_total = db.Column(db.Float, default=0.0)
 
+    # =====================
     # Portefeuille
+    # =====================
     wallet_country = db.Column(db.String(50))
     wallet_operator = db.Column(db.String(50))
     wallet_number = db.Column(db.String(30))
 
+    # =====================
     # Soldes
+    # =====================
     solde_total = db.Column(db.Float, default=0.0)
     solde_depot = db.Column(db.Float, default=0.0)
     solde_parrainage = db.Column(db.Float, default=0.0)
@@ -73,10 +88,26 @@ class User(db.Model, UserMixin):
 
     premier_depot = db.Column(db.Boolean, default=False)
 
+    # =====================
     # Lucky Spin
+    # =====================
     spin_chances = db.Column(db.Integer, default=1)
-    last_spin_gain = db.Column(db.Float, default=0.0)  # 🔥 Nouveau champ pour le dernier gain
+    last_spin_gain = db.Column(db.Float, default=0.0)
 
+    # =====================
+    # 🔐 Sécurité Retrait
+    # =====================
+    retrait_depot_ok = db.Column(
+        db.Boolean,
+        default=False,
+        nullable=False
+    )
+    # False → dépôt 3 000 requis
+    # True  → retrait autorisé (UNE FOIS)
+
+    # =====================
+    # Date
+    # =====================
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
 class Depot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -333,6 +364,7 @@ def dashboard_page():
         total_invested=total_invested,  # ← ici, c’est crucial
     )
 
+
 @app.route("/deposit", methods=["GET", "POST"])
 @login_required
 def deposit_page():
@@ -349,9 +381,13 @@ def deposit_page():
             reference=reference
         )
         db.session.add(depot)
+
+        # ✅ Débloque le retrait après dépôt
+        user.retrait_depot_ok = True
+
         db.session.commit()
 
-        flash("Dépôt soumis avec succès !", "success")
+        flash("Dépôt soumis avec succès ! Vous pouvez maintenant effectuer votre retrait.", "success")
         return redirect(url_for("dashboard_page"))
 
     return render_template("deposit.html", user=user)
@@ -360,6 +396,8 @@ def deposit_page():
 @login_required
 def submit_reference():
     phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+
     montant = float(request.form["montant"])
     reference = request.form["reference"]
 
@@ -369,9 +407,12 @@ def submit_reference():
         reference=reference
     )
     db.session.add(depot)
+
+    # ✅ Débloque le retrait après dépôt
+    user.retrait_depot_ok = True
+
     db.session.commit()
 
-    # 👉 au lieu de redirect, on affiche une page avec loader + succès
     return render_template(
         "submit_reference_loading.html",
         montant=montant,
@@ -465,34 +506,71 @@ def retrait_page():
 def retrait_confirmation_page(montant):
     user = current_user
 
+    # 🔐 Vérification portefeuille
     if not user.wallet_number:
         flash("Veuillez configurer votre portefeuille avant de retirer.", "warning")
         return redirect(url_for("wallet_setup_page"))
 
+    # 💰 Solde retirable
+    solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
+    if montant > solde_retraitable:
+        flash("Solde insuffisant.", "danger")
+        return redirect(url_for("retrait_page"))
+
     taxe = int(montant * 0.15)
     net = montant - taxe
 
-    # Message obligatoire pour tout retrait : dépôt de 3000 XOF
-    depot_message = "❌ Vous devez recharger votre compte de 3 000 XOF pour finaliser le retrait."
+    # 🚫 POST BLOQUÉ SI dépôt non effectué
+    if request.method == "POST" and not user.retrait_depot_ok:
+        flash("Veuillez recharger 3 000 XOF avant de confirmer le retrait.", "danger")
+        return redirect(url_for("retrait_confirmation_page", montant=montant))
 
-    # Le POST ne crée jamais de retrait tant que le dépôt n'est pas effectué
-    if request.method == "POST":
+    # ✅ POST AUTORISÉ SI dépôt OK
+    if request.method == "POST" and user.retrait_depot_ok:
+        retrait = Retrait(
+            phone=user.phone,
+            montant=montant,
+            statut="en_attente"
+        )
+        db.session.add(retrait)
+
+        # ➖ Déduction du solde
+        reste = montant
+        if user.solde_parrainage >= reste:
+            user.solde_parrainage -= reste
+            reste = 0
+        else:
+            reste -= user.solde_parrainage
+            user.solde_parrainage = 0
+
+        if reste > 0:
+            user.solde_revenu -= reste
+
+        # 🔁 REBLOCAGE pour le prochain retrait
+        user.retrait_depot_ok = False
+
+        db.session.commit()
+
         return render_template(
-            "retrait_confirmation.html",
+            "retrait_confirmation_loading.html",
             montant=montant,
             taxe=taxe,
             net=net,
-            user=user,
-            depot_message=depot_message
+            user=user
         )
 
+    # 🧱 GET : affichage de la page de confirmation
     return render_template(
         "retrait_confirmation.html",
         montant=montant,
         taxe=taxe,
         net=net,
         user=user,
-        depot_message=depot_message
+        depot_message=(
+            "❌ Vous devez recharger votre compte de 3 000 XOF pour finaliser ce retrait."
+            if not user.retrait_depot_ok else None
+        ),
+        bouton_actif=user.retrait_depot_ok  # ← permet d’activer le bouton
     )
 
 import random

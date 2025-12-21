@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Confirmation du retrait</title>
+
 <style>
 body {
     background: #f3f4f6;
@@ -39,6 +40,9 @@ h2 {
     font-weight: bold;
     border: none;
 }
+.btn.disabled {
+    opacity: 0.5;
+}
 .message-depot {
     color: red;
     font-weight: bold;
@@ -47,6 +51,7 @@ h2 {
 }
 </style>
 </head>
+
 <body>
 
 <h2>Confirmer le retrait</h2>
@@ -66,14 +71,24 @@ h2 {
     </div>
 
     <hr style="margin: 20px 0;">
+
     <h3>Portefeuille</h3>
-    <p><strong>{{ user.wallet_country }} • {{ user.wallet_operator }}</strong><br>{{ user.wallet_number }}</p>
+    <p>
+        <strong>{{ user.wallet_country }} • {{ user.wallet_operator }}</strong><br>
+        {{ user.wallet_number }}
+    </p>
 </div>
 
+{% if depot_message %}
 <p class="message-depot">{{ depot_message }}</p>
+{% endif %}
 
-<form method="POST" onsubmit="return false;"> <!-- Empêche toujours la soumission -->
-    <button class="btn" type="submit">Confirmer le retrait</button>
+<form method="POST">
+    {% if bouton_actif %}
+        <button class="btn" type="submit">Confirmer le retrait</button>
+    {% else %}
+        <button class="btn disabled" type="button" disabled>Confirmer le retrait</button>
+    {% endif %}
 </form>
 
 </body>
